@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "130730568834",
+    "project_id": "swiggyclone-b5c89",
+    "storage_bucket": "swiggyclone-b5c89.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130730568834:android:fbf13430144bbebf6ad89b",
+        "android_client_info": {
+          "package_name": "com.example.swiggyclone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDStkS9YDqtdNZLza2T39r8VgbbbSTGR-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
