@@ -12,7 +12,20 @@
           "package_name": "com.example.swiggyclone"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "130730568834-6cv8p4vrm1vbpc0m6ds34a0pkf6ik0a3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.swiggyclone",
+            "certificate_hash": "476b12907654b6e26fbfa10ff0545948cbadb1aa"
+          }
+        },
+        {
+          "client_id": "130730568834-s4ds3itg21h6pftt13n794123ck2vegf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDStkS9YDqtdNZLza2T39r8VgbbbSTGR-w"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "130730568834-s4ds3itg21h6pftt13n794123ck2vegf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
