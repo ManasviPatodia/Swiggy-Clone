@@ -7,6 +7,8 @@ class GoogleAuthService {
 
   Future<UserCredential?> signInWithGoogle() async {
     try {
+      await _googleSignIn.signOut();
+
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return null;
 
@@ -24,10 +26,5 @@ class GoogleAuthService {
       print(stackTrace);
       return null;
     }
-  }
-
-  Future<void> signOut() async {
-    await _googleSignIn.signOut();
-    await _auth.signOut();
   }
 }

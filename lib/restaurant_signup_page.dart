@@ -60,64 +60,137 @@ class _RestaurantSignupPageState extends State<RestaurantSignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Restaurant Owner Sign Up")),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
+      backgroundColor: const Color.fromARGB(255, 255, 247, 239),
+      appBar: AppBar(
+        title: const Text("Restaurant Owner Sign Up"),
+        backgroundColor: const Color.fromARGB(255, 255, 94, 19),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
+              const Icon(
+                Icons.restaurant,
+                size: 80,
+                color: Color.fromARGB(255, 255, 94, 19),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "Create Your Restaurant Account",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
               if (_errorMessage != null)
                 Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
               if (_restaurantId != null)
-                Text(
-                  "Signup successful! Your Restaurant ID: $_restaurantId",
-                  style: const TextStyle(color: Colors.green),
-                ),
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator:
-                    (value) =>
-                        value == null || !value.contains('@')
-                            ? 'Enter valid email'
-                            : null,
-              ),
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator:
-                    (value) =>
-                        value == null || value.length < 6
-                            ? 'Min 6 characters'
-                            : null,
-              ),
-              TextFormField(
-                controller: _restaurantNameController,
-                decoration: const InputDecoration(labelText: 'Restaurant Name'),
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty
-                            ? 'Enter restaurant name'
-                            : null,
-              ),
-              TextFormField(
-                controller: _ownerNameController,
-                decoration: const InputDecoration(labelText: 'Owner Name'),
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty
-                            ? 'Enter owner name'
-                            : null,
-              ),
-              const SizedBox(height: 20),
-              _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                    onPressed: _signUp,
-                    child: const Text("Sign Up"),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.green[50],
+                    border: Border.all(color: Colors.green),
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                  child: Text(
+                    "Signup successful!\nYour Restaurant ID: $_restaurantId",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.email),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator:
+                          (value) =>
+                              value == null || !value.contains('@')
+                                  ? 'Enter valid email'
+                                  : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                        labelText: 'Password',
+                        prefixIcon: Icon(Icons.lock),
+                        border: OutlineInputBorder(),
+                      ),
+                      obscureText: true,
+                      validator:
+                          (value) =>
+                              value == null || value.length < 6
+                                  ? 'Min 6 characters'
+                                  : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _restaurantNameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Restaurant Name',
+                        prefixIcon: Icon(Icons.store),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator:
+                          (value) =>
+                              value == null || value.isEmpty
+                                  ? 'Enter restaurant name'
+                                  : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _ownerNameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Owner Name',
+                        prefixIcon: Icon(Icons.person),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator:
+                          (value) =>
+                              value == null || value.isEmpty
+                                  ? 'Enter owner name'
+                                  : null,
+                    ),
+                    const SizedBox(height: 20),
+                    _isLoading
+                        ? const CircularProgressIndicator()
+                        : SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                255,
+                                94,
+                                19,
+                              ),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: _signUp,
+                            child: const Text(
+                              "Sign Up",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

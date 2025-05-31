@@ -27,7 +27,6 @@ class _RestaurantLoginPageState extends State<RestaurantLoginPage> {
 
     try {
       final restaurantId = _restaurantIdController.text.trim();
-
       final doc =
           await FirebaseFirestore.instance
               .collection('restaurants')
@@ -51,6 +50,7 @@ class _RestaurantLoginPageState extends State<RestaurantLoginPage> {
         password: _passwordController.text.trim(),
       );
 
+      if (!mounted) return;
       Navigator.pushReplacementNamed(
         context,
         '/restaurantSetup',
@@ -66,42 +66,99 @@ class _RestaurantLoginPageState extends State<RestaurantLoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Restaurant Owner Login")),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
+      backgroundColor: const Color.fromARGB(255, 255, 247, 239),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
+              const Icon(
+                Icons.store,
+                size: 80,
+                color: Color.fromARGB(255, 255, 94, 19),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "Restaurant Login",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
               if (_errorMessage != null)
-                Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
-              TextFormField(
-                controller: _restaurantIdController,
-                decoration: const InputDecoration(labelText: 'Restaurant ID'),
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty
-                            ? 'Enter Restaurant ID'
-                            : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator:
-                    (value) =>
-                        value == null || value.length < 6
-                            ? 'Enter valid password'
-                            : null,
-              ),
-              const SizedBox(height: 24),
-              _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                    onPressed: _login,
-                    child: const Text("Login"),
+                Text(
+                  _errorMessage!,
+                  style: const TextStyle(
+                    color: Color.fromARGB(255, 223, 84, 75),
                   ),
+                ),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _restaurantIdController,
+                      decoration: const InputDecoration(
+                        labelText: 'Restaurant ID',
+                        prefixIcon: Icon(Icons.vpn_key),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator:
+                          (value) =>
+                              value == null || value.isEmpty
+                                  ? 'Enter Restaurant ID'
+                                  : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                        labelText: 'Password',
+                        prefixIcon: Icon(Icons.lock),
+                        border: OutlineInputBorder(),
+                      ),
+                      obscureText: true,
+                      validator:
+                          (value) =>
+                              value == null || value.length < 6
+                                  ? 'Enter valid password'
+                                  : null,
+                    ),
+                    const SizedBox(height: 20),
+                    _isLoading
+                        ? const CircularProgressIndicator()
+                        : SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                255,
+                                94,
+                                19,
+                              ),
+                              foregroundColor: const Color.fromARGB(
+                                255,
+                                51,
+                                30,
+                                30,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 16.0,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: _login,
+                            child: const Text(
+                              "Login",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
@@ -112,7 +169,7 @@ class _RestaurantLoginPageState extends State<RestaurantLoginPage> {
                     ),
                   );
                 },
-                child: const Text("Don't have an account? Sign Up"),
+                child: const Text("Don't have an account? Sign up"),
               ),
             ],
           ),

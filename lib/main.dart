@@ -21,7 +21,6 @@ class SnackGoApp extends StatelessWidget {
       routes: {
         '/restaurantSignup': (context) => const RestaurantSignupPage(),
         '/restaurantLogin': (context) => const RestaurantLoginPage(),
-        //'/restaurantSetup': (context) => const RestaurantSetupPage(),
       },
     );
   }

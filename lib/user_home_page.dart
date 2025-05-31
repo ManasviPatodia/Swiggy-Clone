@@ -55,8 +55,8 @@ class UserHomePage extends StatelessWidget {
                   itemCount: restaurants.length,
                   itemBuilder: (context, index) {
                     final restaurant = restaurants[index];
-                    final name = restaurant['name'] ?? 'Unnamed';
-                    final cuisine = restaurant['cuisine'] ?? 'Cuisine';
+                    final name = restaurant['restaurantName'] ?? 'Unnamed';
+                    final cuisine = 'N/A'; //restaurant['cuisine'] ?? 'Cuisine';
                     final rating = 'N/A';
 
                     return ListTile(
