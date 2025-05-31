@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
+import 'restaurant_login_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -10,8 +11,12 @@ class WelcomePage extends StatelessWidget {
         context,
         MaterialPageRoute(builder: (context) => const LoginPage()),
       );
+    } else if (role == 'Restaurant Owner') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const RestaurantLoginPage()),
+      );
     } else {
-      // For now, show a snackbar for Restaurant Owner and Admin
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('$role login not yet implemented')),
       );
