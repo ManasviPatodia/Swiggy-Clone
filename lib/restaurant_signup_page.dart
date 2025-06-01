@@ -36,7 +36,7 @@ class _RestaurantSignupPageState extends State<RestaurantSignupPage> {
           );
 
       final uid = userCred.user!.uid;
-      final restaurantId = const Uuid().v4().substring(0, 8); // short ID
+      final restaurantId = const Uuid().v4().substring(0, 8);
 
       await FirebaseFirestore.instance
           .collection('restaurants')

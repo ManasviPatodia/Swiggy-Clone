@@ -26,68 +26,90 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 247, 239),
+      backgroundColor: const Color(0xFFFFF3E0), // Swiggy-like warm background
       body: Center(
+        // Center everything vertically and horizontally
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              const Text(
                 'SnackGo',
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
-                  color: Colors.deepOrange,
+                  color: Color(0xFFFF5722), // Swiggy Orange
                 ),
               ),
               const SizedBox(height: 40),
-              Text(
-                'Who are you?',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+              const Text(
+                'Choose your role',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
               ),
               const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed:
-                    () => navigateToRolePage(context, 'Restaurant Owner'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 255, 94, 19),
-                  foregroundColor: const Color.fromARGB(255, 51, 30, 30),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 12,
-                  ),
-                ),
-                child: const Text('Restaurant Owner'),
+              _roleCard(
+                context,
+                role: 'User',
+                icon: Icons.person_outline,
+                color: Colors.deepOrange,
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => navigateToRolePage(context, 'Admin'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 255, 94, 19),
-                  foregroundColor: const Color.fromARGB(255, 51, 30, 30),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 12,
-                  ),
-                ),
-                child: const Text('Admin'),
+              const SizedBox(height: 20),
+              _roleCard(
+                context,
+                role: 'Restaurant Owner',
+                icon: Icons.store_mall_directory_outlined,
+                color: Colors.orangeAccent,
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => navigateToRolePage(context, 'User'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 255, 94, 19),
-                  foregroundColor: const Color.fromARGB(255, 51, 30, 30),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 12,
-                  ),
-                ),
-                child: const Text('User'),
+              const SizedBox(height: 20),
+              _roleCard(
+                context,
+                role: 'Admin',
+                icon: Icons.admin_panel_settings_outlined,
+                color: Colors.brown,
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _roleCard(
+    BuildContext context, {
+    required String role,
+    required IconData icon,
+    required Color color,
+  }) {
+    return InkWell(
+      onTap: () => navigateToRolePage(context, role),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          border: Border.all(color: color.withOpacity(0.3)),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 30, color: color),
+            const SizedBox(width: 20),
+            Text(
+              role,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+                color: color,
+              ),
+            ),
+            const Spacer(),
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          ],
         ),
       ),
     );
