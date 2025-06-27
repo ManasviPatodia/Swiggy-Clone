@@ -26,9 +26,8 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF3E0), // Swiggy-like warm background
+      backgroundColor: const Color(0xFFFFF3E0),
       body: Center(
-        // Center everything vertically and horizontally
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
@@ -39,7 +38,7 @@ class WelcomePage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFFF5722), // Swiggy Orange
+                  color: Color(0xFFFF5722),
                 ),
               ),
               const SizedBox(height: 40),

@@ -50,14 +50,27 @@ class _RestaurantLoginPageState extends State<RestaurantLoginPage> {
         password: _passwordController.text.trim(),
       );
 
+      final bool isSetupComplete =
+          data!.containsKey('cuisines') &&
+          data.containsKey('restaurantImage') &&
+          data.containsKey('menuImage') &&
+          data.containsKey('priceForTwo') &&
+          (data['cuisines'] as List).isNotEmpty &&
+          (data['restaurantImage'] as String).isNotEmpty &&
+          (data['menuImage'] as String).isNotEmpty &&
+          data['priceForTwo'] != null;
+
       if (!mounted) return;
+
       Navigator.pushReplacementNamed(
         context,
-        '/restaurantSetup',
+        isSetupComplete ? '/restaurantHome' : '/restaurantSetup',
         arguments: restaurantId,
       );
     } on FirebaseAuthException catch (e) {
       setState(() => _errorMessage = e.message);
+    } catch (e) {
+      setState(() => _errorMessage = "An unexpected error occurred.");
     } finally {
       setState(() => _isLoading = false);
     }

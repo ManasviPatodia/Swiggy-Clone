@@ -55,13 +55,15 @@ class UserHomePage extends StatelessWidget {
                   itemCount: restaurants.length,
                   itemBuilder: (context, index) {
                     final restaurant = restaurants[index];
-                    final name = restaurant['restaurantName'] ?? 'Unnamed';
-                    final cuisine = 'N/A'; //restaurant['cuisine'] ?? 'Cuisine';
-                    final rating = 'N/A';
-
                     return ListTile(
-                      title: Text(name),
-                      subtitle: Text('$cuisine • $rating ⭐'),
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          restaurant['restaurantImage'],
+                        ),
+                        radius: 30,
+                      ),
+                      title: Text(restaurant['restaurantName']),
+                      subtitle: const Text("Tap to view menu"),
                       onTap: () {
                         Navigator.pushNamed(
                           context,
@@ -86,9 +88,8 @@ class UserHomePage extends StatelessWidget {
           ),
         ],
         onTap: (index) {
-          if (index == 0) {
-          } else if (index == 1) {
-            Navigator.pushNamed(context, '/cartPage');
+          if (index == 1) {
+            Navigator.pushNamed(context, '/cart');
           }
         },
       ),

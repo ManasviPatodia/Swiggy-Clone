@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "130730568834",
-    "project_id": "swiggyclone-b5c89",
-    "storage_bucket": "swiggyclone-b5c89.firebasestorage.app"
+    "project_number": "654880119712",
+    "project_id": "swiggyclone-eb7ea",
+    "storage_bucket": "swiggyclone-eb7ea.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:130730568834:android:fbf13430144bbebf6ad89b",
+        "mobilesdk_app_id": "1:654880119712:android:fc616f1cccd5d9856022c5",
         "android_client_info": {
           "package_name": "com.example.swiggyclone"
         }
       },
       "oauth_client": [
         {
-          "client_id": "130730568834-6cv8p4vrm1vbpc0m6ds34a0pkf6ik0a3.apps.googleusercontent.com",
+          "client_id": "654880119712-24fhtnf89g79ers8nhad3esfcc1bidl4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.swiggyclone",
-            "certificate_hash": "476b12907654b6e26fbfa10ff0545948cbadb1aa"
+            "certificate_hash": "82e332d85e18ecc2cfcf9e15d089a7abe6df09c9"
           }
         },
         {
-          "client_id": "130730568834-s4ds3itg21h6pftt13n794123ck2vegf.apps.googleusercontent.com",
+          "client_id": "654880119712-jusjroravi6t5fi6a14uj0qtm67kf7md.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDStkS9YDqtdNZLza2T39r8VgbbbSTGR-w"
+          "current_key": "AIzaSyBT_-mYG4b9B7K7M9Of7xBqRGg66gy8Xro"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "130730568834-s4ds3itg21h6pftt13n794123ck2vegf.apps.googleusercontent.com",
+              "client_id": "654880119712-jusjroravi6t5fi6a14uj0qtm67kf7md.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
