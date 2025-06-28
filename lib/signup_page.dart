@@ -15,9 +15,10 @@ class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   String? _errorMessage;
+  bool _agreeToPolicy = false;
 
   Future<void> _signUp() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate() || !_agreeToPolicy) return;
 
     setState(() {
       _isLoading = true;
@@ -50,10 +51,14 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 247, 239),
+      backgroundColor: const Color.fromARGB(255, 255, 247, 241),
       appBar: AppBar(
-        title: const Text("User Sign Up"),
-        backgroundColor: const Color.fromARGB(255, 255, 94, 19),
+        backgroundColor: Colors.deepOrange,
+        title: const Text(
+          "User Sign Up",
+          style: TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -61,11 +66,7 @@ class _SignupPageState extends State<SignupPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.person_add,
-                size: 80,
-                color: Color.fromARGB(255, 255, 94, 19),
-              ),
+              const Icon(Icons.person_add, size: 80, color: Colors.deepOrange),
               const SizedBox(height: 20),
               const Text(
                 "Create Your Account",
@@ -81,52 +82,88 @@ class _SignupPageState extends State<SignupPage> {
                   children: [
                     TextFormField(
                       controller: _emailController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Email',
-                        prefixIcon: Icon(Icons.email),
-                        border: OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.email),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Colors.deepOrange,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Colors.deepOrange,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      validator:
-                          (value) =>
-                              value == null || !value.contains('@')
-                                  ? 'Enter a valid email'
-                                  : null,
+                      validator: (value) {
+                        if (value == null || !value.contains('@')) {
+                          return 'Enter a valid email';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _passwordController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock),
-                        border: OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.lock),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Colors.deepOrange,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Colors.deepOrange,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       obscureText: true,
-                      validator:
-                          (value) =>
-                              value == null || value.length < 6
-                                  ? 'Min 6 characters'
-                                  : null,
+                      validator: (value) {
+                        if (value == null || value.length < 6) {
+                          return 'Min 6 characters';
+                        }
+                        return null;
+                      },
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
+                    CheckboxListTile(
+                      title: const Text(
+                        "I agree with Privacy and Policy",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      value: _agreeToPolicy,
+                      activeColor: Colors.deepOrange,
+                      onChanged: (value) {
+                        setState(() => _agreeToPolicy = value ?? false);
+                      },
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
+                    const SizedBox(height: 16),
                     _isLoading
                         ? const CircularProgressIndicator()
                         : SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                255,
-                                94,
-                                19,
-                              ),
+                              backgroundColor: Colors.deepOrange,
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            onPressed: _signUp,
+                            onPressed: _agreeToPolicy ? _signUp : null,
                             child: const Text(
                               "Create Account",
                               style: TextStyle(fontSize: 16),

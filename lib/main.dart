@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:swiggyclone/login_page.dart';
 import 'restaurant_home_page.dart';
 import 'welcome_page.dart';
 import 'restaurant_signup_page.dart';
@@ -32,6 +33,7 @@ class SnackGoApp extends StatelessWidget {
         '/restaurantLogin': (context) => const RestaurantLoginPage(),
         '/cart': (context) => const CartPage(),
         '/userProfile': (context) => const UserProfilePage(),
+        '/login': (context) => LoginPage(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/restaurantSetup') {

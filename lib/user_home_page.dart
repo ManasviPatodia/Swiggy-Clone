@@ -195,7 +195,7 @@ class _UserHomePageState extends State<UserHomePage> {
               return _buildRestaurantCard(
                 name: data['restaurantName'] ?? 'Restaurant',
                 image: data['restaurantImage'] ?? '',
-                cuisine: (data['cuisines'] as List<dynamic>).join(', '),
+                cuisine: (data['cuisines'] as List<dynamic>? ?? []).join(', '),
                 priceForTwo: "₹${data['priceForTwo'] ?? '0'} for two",
                 rating: data['rating']?.toString() ?? '0.0',
                 onTap:

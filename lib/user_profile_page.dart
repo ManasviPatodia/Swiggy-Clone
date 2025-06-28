@@ -22,11 +22,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     try {
       await FirebaseAuth.instance.signOut();
       if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/welcome',
-          (route) => false,
-        );
+        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
       }
     } catch (e) {
       debugPrint("Logout error: $e");
@@ -111,10 +107,28 @@ class _UserProfilePageState extends State<UserProfilePage> {
           const Divider(thickness: 1),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: TextButton.icon(
-              onPressed: _logout,
-              icon: const Icon(Icons.logout, color: Colors.red),
-              label: const Text("Logout", style: TextStyle(color: Colors.red)),
+            child: Column(
+              children: [
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/restaurantLogin');
+                  },
+                  icon: const Icon(Icons.storefront, color: Colors.deepOrange),
+                  label: const Text(
+                    "Switch to Restaurant Owner",
+                    style: TextStyle(color: Colors.deepOrange),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                TextButton.icon(
+                  onPressed: _logout,
+                  icon: const Icon(Icons.logout, color: Colors.red),
+                  label: const Text(
+                    "Logout",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

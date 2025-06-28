@@ -119,7 +119,10 @@ class _RestaurantSetupPageState extends State<RestaurantSetupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Set up your Restaurant")),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text("Set up your Restaurant"),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
