@@ -166,7 +166,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                         ),
 
                         const SizedBox(height: 20),
-                        sectionTitle("Want to repeat?"),
+                        sectionTitle("Top Picks"),
 
                         SizedBox(
                           height: 230,
@@ -181,7 +181,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                           ),
                         ),
 
-                        sectionTitle("Top Picks"),
+                        sectionTitle("Dishes"),
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),

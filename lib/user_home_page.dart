@@ -12,6 +12,13 @@ class UserHomePage extends StatefulWidget {
 class _UserHomePageState extends State<UserHomePage> {
   String searchQuery = '';
 
+  String getHighQualityImage(String url) {
+    if (url.contains('res.cloudinary.com') && url.contains('/upload/')) {
+      return url.replaceFirst('/upload/', '/upload/q_auto:eco,f_auto/');
+    }
+    return url;
+  }
+
   Widget _buildRestaurantCard({
     required String name,
     required String image,
@@ -23,38 +30,44 @@ class _UserHomePageState extends State<UserHomePage> {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 5,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 4,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
               ),
               child: Image.network(
-                image,
-                height: 160,
+                getHighQualityImage(image),
+                height: 180,
                 width: double.infinity,
                 fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
-                  return const Center(child: CircularProgressIndicator());
+                  return const SizedBox(
+                    height: 180,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
                 },
                 errorBuilder:
-                    (context, error, stackTrace) => const Center(
-                      child: Icon(
-                        Icons.broken_image,
-                        size: 40,
-                        color: Colors.grey,
+                    (context, error, stackTrace) => const SizedBox(
+                      height: 180,
+                      child: Center(
+                        child: Icon(
+                          Icons.broken_image,
+                          size: 40,
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -62,15 +75,19 @@ class _UserHomePageState extends State<UserHomePage> {
                     name,
                     style: const TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     cuisine,
                     style: const TextStyle(color: Colors.grey, fontSize: 14),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -89,6 +106,7 @@ class _UserHomePageState extends State<UserHomePage> {
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
+                            fontSize: 13,
                           ),
                         ),
                       ),
@@ -106,10 +124,10 @@ class _UserHomePageState extends State<UserHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      backgroundColor: const Color(0xFFFFF7F0),
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 2,
+        elevation: 1,
         automaticallyImplyLeading: false,
         toolbarHeight: 100,
         flexibleSpace: SafeArea(
@@ -123,7 +141,7 @@ class _UserHomePageState extends State<UserHomePage> {
                   "SnackGo",
                   style: TextStyle(
                     color: Colors.deepOrange,
-                    fontSize: 24,
+                    fontSize: 26,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
                   ),
@@ -171,7 +189,6 @@ class _UserHomePageState extends State<UserHomePage> {
           }
 
           final docs = snapshot.data!.docs;
-
           final filteredDocs =
               docs.where((doc) {
                 final data = doc.data() as Map<String, dynamic>;
@@ -191,7 +208,6 @@ class _UserHomePageState extends State<UserHomePage> {
             itemCount: filteredDocs.length,
             itemBuilder: (context, index) {
               final data = filteredDocs[index].data() as Map<String, dynamic>;
-
               return _buildRestaurantCard(
                 name: data['restaurantName'] ?? 'Restaurant',
                 image: data['restaurantImage'] ?? '',

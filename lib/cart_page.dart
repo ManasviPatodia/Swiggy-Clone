@@ -15,7 +15,7 @@ class _CartPageState extends State<CartPage> {
   int totalPrice = 0;
   int selectedDelivery = 0;
 
-  int _selectedIndex = 1;
+  final int _selectedIndex = 1;
 
   void _onItemTapped(int index) {
     if (index == 0) {
