@@ -106,31 +106,58 @@ class _UserHomePageState extends State<UserHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 2,
-        leading: IconButton(
-          icon: const Icon(Icons.location_on, color: Colors.deepOrange),
-          onPressed: () {},
-        ),
-        title: TextField(
-          decoration: const InputDecoration(
-            hintText: 'Search restaurants...',
-            border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.grey),
+        automaticallyImplyLeading: false,
+        toolbarHeight: 100,
+        flexibleSpace: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "SnackGo",
+                  style: TextStyle(
+                    color: Colors.deepOrange,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    const Icon(Icons.location_on, color: Colors.deepOrange),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          hintText: 'Search restaurants...',
+                          border: InputBorder.none,
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            searchQuery = value;
+                          });
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.person, color: Colors.deepOrange),
+                      onPressed:
+                          () => Navigator.pushNamed(context, '/userProfile'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          onChanged: (value) {
-            setState(() {
-              searchQuery = value;
-            });
-          },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person, color: Colors.deepOrange),
-            onPressed: () => Navigator.pushNamed(context, '/userProfile'),
-          ),
-        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream:
@@ -189,6 +216,7 @@ class _UserHomePageState extends State<UserHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.deepOrange,
         unselectedItemColor: Colors.grey,
+        currentIndex: 0,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
