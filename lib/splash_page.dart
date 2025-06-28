@@ -12,7 +12,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(seconds: 4), () {
+    Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushReplacementNamed(context, '/welcome');
     });
   }
@@ -20,7 +20,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 94, 19), // Orange color
+      backgroundColor: const Color.fromARGB(255, 255, 94, 19),
       body: Center(
         child: Image.asset(
           'assets/logo.png',

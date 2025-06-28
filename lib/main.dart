@@ -9,6 +9,7 @@ import 'setup_page.dart';
 import 'cart_page.dart';
 import 'splash_page.dart';
 import 'restaurant_page.dart';
+import 'user_profile_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +31,7 @@ class SnackGoApp extends StatelessWidget {
         '/restaurantSignup': (context) => const RestaurantSignupPage(),
         '/restaurantLogin': (context) => const RestaurantLoginPage(),
         '/cart': (context) => const CartPage(),
+        '/userProfile': (context) => const UserProfilePage(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/restaurantSetup') {

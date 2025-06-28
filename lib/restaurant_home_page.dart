@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
@@ -131,9 +130,8 @@ class _RestaurantHomePageState extends State<RestaurantHomePage> {
                           return;
                         }
 
-                        Navigator.pop(ctx); // Close dialog
+                        Navigator.pop(ctx);
 
-                        // Upload to Cloudinary
                         final imgUrl = await uploadImageToCloudinary(
                           selectedImage!,
                         );
@@ -159,7 +157,7 @@ class _RestaurantHomePageState extends State<RestaurantHomePage> {
                           'imageUrl': imgUrl,
                         });
 
-                        fetchDishes(); // Refresh list
+                        fetchDishes();
                       },
                       child: const Text("Add Dish"),
                     ),

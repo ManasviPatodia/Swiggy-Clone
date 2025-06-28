@@ -33,6 +33,7 @@ flutter:
   assets:
     - assets/google.png
     - assets/logo.png
+    - assets/default_user.png
 
   uses-material-design: true
 

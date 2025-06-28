@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "654880119712-24fhtnf89g79ers8nhad3esfcc1bidl4.apps.googleusercontent.com",
+          "client_id": "654880119712-vlmqqghfn6tdjd8qffcap31h4m3kf4u2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.swiggyclone",
-            "certificate_hash": "82e332d85e18ecc2cfcf9e15d089a7abe6df09c9"
+            "certificate_hash": "476b12907654b6e26fbfa10ff0545948cbadb1aa"
           }
         },
         {

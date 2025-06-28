@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
@@ -30,7 +29,6 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
   }
 
   Future<String?> _uploadImageToCloudinary(File imageFile) async {
-    const cloudName = 'dqqqng5r9';
     const uploadPreset = 'snackgo_upload';
 
     final url = Uri.parse(
@@ -57,8 +55,9 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
   Future<void> _addDish() async {
     if (_dishNameController.text.isEmpty ||
         _dishPriceController.text.isEmpty ||
-        _pickedImage == null)
+        _pickedImage == null) {
       return;
+    }
 
     setState(() {
       _isUploading = true;
@@ -104,8 +103,9 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
       body: FutureBuilder<DocumentSnapshot>(
         future: restaurantDoc.get(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
 
           final data = snapshot.data!;
           return SingleChildScrollView(
@@ -198,8 +198,9 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
                 StreamBuilder<QuerySnapshot>(
                   stream: dishesStream,
                   builder: (context, dishSnapshot) {
-                    if (!dishSnapshot.hasData)
+                    if (!dishSnapshot.hasData) {
                       return const Center(child: CircularProgressIndicator());
+                    }
 
                     final dishes = dishSnapshot.data!.docs;
                     return ListView.builder(
