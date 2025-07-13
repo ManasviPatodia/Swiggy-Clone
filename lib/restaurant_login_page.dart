@@ -160,7 +160,7 @@ class _RestaurantLoginPageState extends State<RestaurantLoginPage> {
                         ),
                         Expanded(
                           child: Text(
-                            "I agree to the Privacy Policy",
+                            "I agree to Privacy and Policy",
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.black87,

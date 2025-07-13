@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:swiggyclone/main.dart';
 import 'user_home_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const SnackGoApp());
+}
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -14,7 +23,6 @@ class _CartPageState extends State<CartPage> {
   String? restaurantId;
   int totalPrice = 0;
   int selectedDelivery = 0;
-
   final int _selectedIndex = 1;
 
   void _onItemTapped(int index) {
@@ -33,49 +41,118 @@ class _CartPageState extends State<CartPage> {
   }
 
   Future<void> loadCart() async {
-    final snapshot =
-        await FirebaseFirestore.instance
-            .collection('cart')
-            .doc('currentCart')
-            .get();
-    if (snapshot.exists) {
-      final data = snapshot.data()!;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final cartRef = FirebaseFirestore.instance
+        .collection('carts')
+        .doc(user.uid);
+    final snapshot = await cartRef.get();
+
+    if (!snapshot.exists || snapshot.data() == null) {
       setState(() {
-        restaurantId = data['restaurantId'];
-        cartItems = List<Map<String, dynamic>>.from(data['items']);
-        totalPrice = cartItems.fold<int>(
-          0,
-          (sum, item) => sum + (item['price'] as int),
-        );
+        cartItems = [];
+        restaurantId = null;
+        totalPrice = 0;
       });
+      return;
     }
+
+    final data = snapshot.data()!;
+    final itemsRaw = data['items'];
+
+    if (itemsRaw is! List) return;
+
+    List<Map<String, dynamic>> parsedItems = [];
+    int computedTotal = 0;
+
+    for (var item in itemsRaw) {
+      if (item is Map<String, dynamic>) {
+        final int price = item['price'] is int ? item['price'] : 0;
+        final int quantity = item['quantity'] is int ? item['quantity'] : 1;
+        parsedItems.add(item);
+        computedTotal += price * quantity;
+      }
+    }
+
+    setState(() {
+      restaurantId = data['restaurantId'];
+      cartItems = parsedItems;
+      totalPrice = computedTotal;
+    });
+  }
+
+  Future<void> updateQuantity(int index, {required bool decrease}) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final item = cartItems[index];
+    int quantity = item['quantity'] ?? 1;
+
+    quantity = decrease ? quantity - 1 : quantity + 1;
+
+    if (quantity <= 0) {
+      await removeItem(index);
+      return;
+    }
+
+    cartItems[index]['quantity'] = quantity;
+
+    totalPrice = cartItems.fold<int>(
+      0,
+      (sum, item) =>
+          sum +
+          (((item['price'] is int ? item['price'] : 0) as int) *
+              ((item['quantity'] is int ? item['quantity'] : 1) as int)),
+    );
+
+    final cartRef = FirebaseFirestore.instance
+        .collection('carts')
+        .doc(user.uid);
+
+    await cartRef.set({'restaurantId': restaurantId, 'items': cartItems});
+
+    setState(() {});
   }
 
   Future<void> removeItem(int index) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
     cartItems.removeAt(index);
+
     totalPrice = cartItems.fold<int>(
       0,
-      (sum, item) => sum + (item['price'] as int),
+      (sum, item) =>
+          sum +
+          (((item['price'] is int ? item['price'] : 0) as int) *
+              ((item['quantity'] is int ? item['quantity'] : 1) as int)),
     );
+
+    final cartRef = FirebaseFirestore.instance
+        .collection('carts')
+        .doc(user.uid);
+
     if (cartItems.isEmpty) {
-      await FirebaseFirestore.instance
-          .collection('cart')
-          .doc('currentCart')
-          .delete();
+      await cartRef.delete();
       restaurantId = null;
     } else {
-      await FirebaseFirestore.instance
-          .collection('cart')
-          .doc('currentCart')
-          .set({'restaurantId': restaurantId, 'items': cartItems});
+      await cartRef.set({'restaurantId': restaurantId, 'items': cartItems});
     }
+
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Review Order")),
+      appBar: AppBar(
+        title: const Text(
+          "Review Order",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.deepOrange,
+      ),
       body:
           cartItems.isEmpty
               ? const Center(child: Text("Your cart is empty."))
@@ -97,8 +174,10 @@ class _CartPageState extends State<CartPage> {
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text("You are ordering for Mamta 🎁"),
+                      children: [
+                        Text(
+                          "You are ordering for ${FirebaseAuth.instance.currentUser?.displayName ?? 'someone special'} 🎁",
+                        ),
                         Text(
                           "EDIT",
                           style: TextStyle(color: Colors.deepOrange),
@@ -111,18 +190,36 @@ class _CartPageState extends State<CartPage> {
                       itemCount: cartItems.length,
                       itemBuilder: (context, index) {
                         final item = cartItems[index];
+                        final name = item['name'] ?? 'Unnamed';
+                        final price = item['price'] ?? 0;
+                        final quantity = item['quantity'] ?? 1;
+                        final imageUrl = item['imageUrl'] ?? '';
+
                         return ListTile(
                           leading: Image.network(
-                            item['imageUrl'],
+                            imageUrl,
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,
                           ),
-                          title: Text(item['name']),
-                          subtitle: Text("₹${item['price']}"),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () => removeItem(index),
+                          title: Text(name),
+                          subtitle: Text("₹$price"),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove),
+                                onPressed:
+                                    () => updateQuantity(index, decrease: true),
+                              ),
+                              Text('$quantity'),
+                              IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed:
+                                    () =>
+                                        updateQuantity(index, decrease: false),
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -145,51 +242,6 @@ class _CartPageState extends State<CartPage> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          "Delivery Type",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                title: const Text("Standard (35–40 mins)"),
-                                leading: Radio<int>(
-                                  value: 0,
-                                  groupValue: selectedDelivery,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedDelivery = value!;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                title: const Text(
-                                  "Eco Saver (40–45 mins)",
-                                  style: TextStyle(color: Colors.deepOrange),
-                                ),
-                                leading: Radio<int>(
-                                  value: 1,
-                                  groupValue: selectedDelivery,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedDelivery = value!;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                       ],
                     ),
                   ),
@@ -205,7 +257,6 @@ class _CartPageState extends State<CartPage> {
               color: Colors.white,
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

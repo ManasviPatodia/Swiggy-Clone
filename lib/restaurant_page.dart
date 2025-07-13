@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'user_home_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RestaurantPage extends StatefulWidget {
   final String restaurantId;
@@ -12,11 +13,19 @@ class RestaurantPage extends StatefulWidget {
 
 class _RestaurantPageState extends State<RestaurantPage> {
   String restaurantName = 'Loading...';
+  final TextEditingController _searchController = TextEditingController();
+
+  List<QueryDocumentSnapshot> allDishes = [];
+  List<QueryDocumentSnapshot> filteredDishes = [];
+  bool hasLoadedDishes = false;
 
   @override
   void initState() {
     super.initState();
     fetchRestaurantName();
+    _searchController.addListener(() {
+      filterDishes(_searchController.text);
+    });
   }
 
   Future<void> fetchRestaurantName() async {
@@ -31,6 +40,21 @@ class _RestaurantPageState extends State<RestaurantPage> {
         restaurantName = doc.data()?['restaurantName'] ?? 'Unnamed Restaurant';
       });
     }
+  }
+
+  void filterDishes(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredDishes = [...allDishes];
+      } else {
+        filteredDishes =
+            allDishes.where((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              final name = data['name']?.toString().toLowerCase() ?? '';
+              return name.contains(query.toLowerCase());
+            }).toList();
+      }
+    });
   }
 
   @override
@@ -58,7 +82,6 @@ class _RestaurantPageState extends State<RestaurantPage> {
                 ],
               ),
             ),
-
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream:
@@ -68,138 +91,142 @@ class _RestaurantPageState extends State<RestaurantPage> {
                         .collection('dishes')
                         .snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return const Center(child: Text('Something went wrong'));
-                  }
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  final dishes = snapshot.data!.docs;
-
-                  if (dishes.isEmpty) {
-                    return const Center(child: Text('No dishes available.'));
+                  if (snapshot.hasError) {
+                    return const Center(child: Text("Error loading dishes"));
                   }
 
-                  return SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(color: Colors.black12, blurRadius: 4),
-                            ],
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 20,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    restaurantName,
-                                    style: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green.shade700,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: const Text(
-                                      "4.4 ★",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              const Text(
-                                "45–50 mins • Lake Town",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                              const SizedBox(height: 8),
-                              const Text(
-                                "20% off upto ₹125 • USE AMEXCORP | ABOVE ₹499",
-                                style: TextStyle(color: Colors.deepOrange),
-                              ),
-                            ],
-                          ),
-                        ),
+                  final docs = snapshot.data!.docs;
 
-                        Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: "Search for dishes",
-                              prefixIcon: const Icon(Icons.search),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade100,
-                            ),
-                          ),
-                        ),
+                  if (!hasLoadedDishes) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      setState(() {
+                        allDishes = docs;
+                        filteredDishes = [...allDishes];
+                        hasLoadedDishes = true;
+                      });
+                    });
+                  }
 
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                          child: Row(
-                            children: [
-                              filterChip("Veg", true),
-                              filterChip("Non-Veg", false),
-                              filterChip("Ratings 4.0+", false),
-                              filterChip("Bestseller", false),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-                        sectionTitle("Top Picks"),
-
-                        SizedBox(
-                          height: 230,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: dishes.length,
-                            itemBuilder: (context, index) {
-                              final data =
-                                  dishes[index].data() as Map<String, dynamic>;
-                              return dishCard(data);
-                            },
-                          ),
-                        ),
-
-                        sectionTitle("Dishes"),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: dishes.length,
-                          itemBuilder: (context, index) {
-                            final data =
-                                dishes[index].data() as Map<String, dynamic>;
-                            return topPickCard(data);
-                          },
-                        ),
-                      ],
-                    ),
-                  );
+                  return buildDishUI();
                 },
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildDishUI() {
+    if (allDishes.isEmpty) {
+      return const Center(child: Text('No dishes available.'));
+    }
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      restaurantName,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade700,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Text(
+                        "4.4 ★",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  "45–50 mins • Lake Town",
+                  style: TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "20% off upto ₹125 • USE AMEXCORP | ABOVE ₹499",
+                  style: TextStyle(color: Colors.deepOrange),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: "Search for dishes",
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade100,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Row(
+              children: [
+                filterChip("Veg", true),
+                filterChip("Non-Veg", false),
+                filterChip("Ratings 4.0+", false),
+                filterChip("Bestseller", false),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          sectionTitle("Top Picks"),
+          SizedBox(
+            height: 230,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: filteredDishes.length,
+              itemBuilder: (context, index) {
+                final data =
+                    filteredDishes[index].data() as Map<String, dynamic>;
+                return dishCard(data);
+              },
+            ),
+          ),
+          sectionTitle("Dishes"),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: filteredDishes.length,
+            itemBuilder: (context, index) {
+              final data = filteredDishes[index].data() as Map<String, dynamic>;
+              return topPickCard(data);
+            },
+          ),
+        ],
       ),
     );
   }
@@ -245,7 +272,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
             child: Image.network(
               data['imageUrl'] ?? '',
-              height: 100,
+              height: 140,
               width: double.infinity,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
@@ -256,16 +283,11 @@ class _RestaurantPageState extends State<RestaurantPage> {
             child: Column(
               children: [
                 Text(
-                  data['name'] ?? 'Unnamed Dish',
-                  style: const TextStyle(fontWeight: FontWeight.w500),
+                  data['name'] ?? '',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  "₹${data['price']}",
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 8),
-                ElevatedButton(onPressed: () {}, child: const Text("ADD")),
+                Text("₹${data['price']}"),
               ],
             ),
           ),
@@ -292,7 +314,51 @@ class _RestaurantPageState extends State<RestaurantPage> {
         ),
         title: Text(data['name'] ?? 'Unnamed Dish'),
         subtitle: Text("₹${data['price']}"),
-        trailing: IconButton(icon: const Icon(Icons.add), onPressed: () {}),
+        trailing: IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () async {
+            final user = FirebaseAuth.instance.currentUser!;
+            final cartRef = FirebaseFirestore.instance
+                .collection('carts')
+                .doc(user.uid);
+            final snapshot =
+                await FirebaseFirestore.instance
+                    .collection('carts')
+                    .doc(user.uid)
+                    .get();
+
+            final itemToAdd = {
+              'name': data['name'],
+              'price': data['price'],
+              'imageUrl': data['imageUrl'] ?? '',
+            };
+
+            if (snapshot.exists) {
+              final cartData = snapshot.data()!;
+              final existingRestaurantId = cartData['restaurantId'];
+              final List<dynamic> items = cartData['items'];
+
+              if (existingRestaurantId != widget.restaurantId) {
+                await cartRef.set({
+                  'restaurantId': widget.restaurantId,
+                  'items': [itemToAdd],
+                });
+              } else {
+                items.add(itemToAdd);
+                await cartRef.update({'items': items});
+              }
+            } else {
+              await cartRef.set({
+                'restaurantId': widget.restaurantId,
+                'items': [itemToAdd],
+              });
+            }
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("${data['name']} added to cart")),
+            );
+          },
+        ),
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'refer_and_earn_page.dart';
+import 'help_And_support_page.dart';
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key});
@@ -33,11 +35,43 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildProfileRow(IconData icon, String text, VoidCallback onTap) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.black),
-      title: Text(text),
-      onTap: onTap,
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 255, 252, 247),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.black87),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  text,
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -52,9 +86,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
     final photo = user.photoURL;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF9F5F0),
       appBar: AppBar(
-        title: const Text("Profile"),
+        title: const Text("Profile", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepOrange,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
         children: [
@@ -96,10 +132,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   Navigator.pushNamed(context, '/vouchers');
                 }),
                 _buildProfileRow(Icons.emoji_people, 'Refer & Earn', () {
-                  Navigator.pushNamed(context, '/refer');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ReferAndEarnPage(),
+                    ),
+                  );
                 }),
                 _buildProfileRow(Icons.help_outline, 'Help & Support', () {
-                  Navigator.pushNamed(context, '/help');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HelpAndSupportPage(),
+                    ),
+                  );
                 }),
               ],
             ),

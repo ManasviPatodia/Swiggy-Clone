@@ -129,105 +129,104 @@ class _UserHomePageState extends State<UserHomePage> {
         backgroundColor: Colors.white,
         elevation: 1,
         automaticallyImplyLeading: false,
-        toolbarHeight: 100,
-        flexibleSpace: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "SnackGo",
-                  style: TextStyle(
-                    color: Colors.deepOrange,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, color: Colors.deepOrange),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        decoration: const InputDecoration(
-                          hintText: 'Search restaurants...',
-                          border: InputBorder.none,
-                          hintStyle: TextStyle(color: Colors.grey),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            searchQuery = value;
-                          });
-                        },
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.person, color: Colors.deepOrange),
-                      onPressed:
-                          () => Navigator.pushNamed(context, '/userProfile'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+        title: const Text(
+          "SnackGo",
+          style: TextStyle(
+            color: Colors.deepOrange,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person, color: Colors.deepOrange),
+            onPressed: () => Navigator.pushNamed(context, '/userProfile'),
+          ),
+        ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream:
-            FirebaseFirestore.instance.collection('restaurants').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text("No restaurants found"));
-          }
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search restaurants...',
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value;
+                });
+              },
+            ),
+          ),
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream:
+                  FirebaseFirestore.instance
+                      .collection('restaurants')
+                      .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Text("No restaurants found"));
+                }
 
-          final docs = snapshot.data!.docs;
-          final filteredDocs =
-              docs.where((doc) {
-                final data = doc.data() as Map<String, dynamic>;
-                final name =
-                    (data['restaurantName'] ?? '')
-                        .toString()
-                        .toLowerCase()
-                        .trim();
-                return name.contains(searchQuery.toLowerCase().trim());
-              }).toList();
+                final docs = snapshot.data!.docs;
+                final filteredDocs =
+                    docs.where((doc) {
+                      final data = doc.data() as Map<String, dynamic>;
+                      final name =
+                          (data['restaurantName'] ?? '')
+                              .toString()
+                              .toLowerCase()
+                              .trim();
+                      return name.contains(searchQuery.toLowerCase().trim());
+                    }).toList();
 
-          if (filteredDocs.isEmpty) {
-            return const Center(child: Text("No matching restaurant"));
-          }
+                if (filteredDocs.isEmpty) {
+                  return const Center(child: Text("No matching restaurant"));
+                }
 
-          return ListView.builder(
-            itemCount: filteredDocs.length,
-            itemBuilder: (context, index) {
-              final data = filteredDocs[index].data() as Map<String, dynamic>;
-              return _buildRestaurantCard(
-                name: data['restaurantName'] ?? 'Restaurant',
-                image: data['restaurantImage'] ?? '',
-                cuisine: (data['cuisines'] as List<dynamic>? ?? []).join(', '),
-                priceForTwo: "₹${data['priceForTwo'] ?? '0'} for two",
-                rating: data['rating']?.toString() ?? '0.0',
-                onTap:
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => RestaurantPage(
-                              restaurantId: filteredDocs[index].id,
-                            ),
+                return ListView.builder(
+                  itemCount: filteredDocs.length,
+                  itemBuilder: (context, index) {
+                    final data =
+                        filteredDocs[index].data() as Map<String, dynamic>;
+                    return _buildRestaurantCard(
+                      name: data['restaurantName'] ?? 'Restaurant',
+                      image: data['restaurantImage'] ?? '',
+                      cuisine: (data['cuisines'] as List<dynamic>? ?? []).join(
+                        ', ',
                       ),
-                    ),
-              );
-            },
-          );
-        },
+                      priceForTwo: "₹${data['priceForTwo'] ?? '0'} for two",
+                      rating: data['rating']?.toString() ?? '0.0',
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => RestaurantPage(
+                                    restaurantId: filteredDocs[index].id,
+                                  ),
+                            ),
+                          ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.deepOrange,
